@@ -24,11 +24,17 @@ class Architect(Agent):
 
         self.project.current_step = ARCHITECTURE_STEP
 
-        # If this app_id already did this step, just get all data from DB and don't ask user again
-        step = get_progress_steps(self.project.args['app_id'], ARCHITECTURE_STEP)
-        if step and not should_execute_step(self.project.args['step'], ARCHITECTURE_STEP):
-            step_already_finished(self.project.args, step)
-            self.project.architecture = step['architecture']
+        def is_architecture_step_already_finished(project):
+            step = get_progress_steps(project.args['app_id'], ARCHITECTURE_STEP)
+            return step and not should_execute_step(project.args['step'], ARCHITECTURE_STEP)
+
+        def handle_finished_architecture_step(project, step):
+            step_already_finished(project.args, step)
+            project.architecture = step['architecture']
+            return
+
+        if is_architecture_step_already_finished(self.project):
+            handle_finished_architecture_step(self.project, step)
             return
 
         # ARCHITECTURE
