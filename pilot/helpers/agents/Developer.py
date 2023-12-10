@@ -502,10 +502,19 @@ class Developer(Agent):
         self.project.current_step = ENVIRONMENT_SETUP_STEP
         self.convo_os_specific_tech = AgentConvo(self)
 
-        # If this app_id already did this step, just get all data from DB and don't ask user again
-        step = get_progress_steps(self.project.args['app_id'], ENVIRONMENT_SETUP_STEP)
-        if step and not should_execute_step(self.project.args['step'], ENVIRONMENT_SETUP_STEP):
+        def has_already_completed_architecture_step():
+            step = get_progress_steps(self.project.args['app_id'], ARCHITECTURE_STEP)
+            return step and not should_execute_step(self.project.args['step'], ARCHITECTURE_STEP)
+
+        def handle_already_completed_architecture_step(step):
             step_already_finished(self.project.args, step)
+            self.project.architecture = step['architecture']
+
+        # Check if the step has already been completed
+        if has_already_completed_architecture_step():
+            # Handle the case where the step is already completed
+            step = get_progress_steps(self.project.args['app_id'], ARCHITECTURE_STEP)
+            handle_already_completed_architecture_step(step)
             return
 
         user_input = ''
