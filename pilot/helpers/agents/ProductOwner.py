@@ -26,16 +26,21 @@ class ProductOwner(Agent):
 
         self.project.app = get_app(self.project.args['app_id'], error_if_not_found=False)
 
-        # If this app_id already did this step, just get all data from DB and don't ask user again
-        if self.project.app is not None:
-            step = get_progress_steps(self.project.args['app_id'], PROJECT_DESCRIPTION_STEP)
-            if step and not should_execute_step(self.project.args['step'], PROJECT_DESCRIPTION_STEP):
-                step_already_finished(self.project.args, step)
-                self.project.set_root_path(setup_workspace(self.project.args))
-                self.project.project_description = step['summary']
-                self.project.project_description_messages = step['messages']
-                self.project.main_prompt = step['prompt']
-                return
+        def is_project_description_step_already_finished(project):
+            step = get_progress_steps(project.args['app_id'], PROJECT_DESCRIPTION_STEP)
+            return step and not should_execute_step(project.args['step'], PROJECT_DESCRIPTION_STEP)
+
+        def handle_finished_project_description_step(project, step):
+            step_already_finished(project.args, step)
+            project.set_root_path(setup_workspace(project.args))
+            project.project_description = step['summary']
+            project.project_description_messages = step['messages']
+            project.main_prompt = step['prompt']
+            return
+
+        if self.project.app is not None and is_project_description_step_already_finished(self.project):
+            handle_finished_project_description_step(self.project, step)
+            return
 
         # PROJECT DESCRIPTION
         self.project.current_step = PROJECT_DESCRIPTION_STEP
