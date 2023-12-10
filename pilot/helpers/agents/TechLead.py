@@ -19,18 +19,18 @@ class TechLead(Agent):
         self.project.current_step = DEVELOPMENT_PLANNING_STEP
         self.convo_development_plan = AgentConvo(self)
 
-    def is_development_planning_step_already_finished(project):
-        step = get_progress_steps(project.args['app_id'], DEVELOPMENT_PLANNING_STEP)
-        return step and not should_execute_step(project.args['step'], DEVELOPMENT_PLANNING_STEP)
+        def is_development_planning_step_already_finished(project):
+            step = get_progress_steps(project.args['app_id'], DEVELOPMENT_PLANNING_STEP)
+            return step and not should_execute_step(project.args['step'], DEVELOPMENT_PLANNING_STEP)
 
-    def handle_finished_development_planning_step(project, step):
-        step_already_finished(project.args, step)
-        project.development_plan = step['development_plan']
-        return
+        def handle_finished_development_planning_step(project, step):
+            step_already_finished(project.args, step)
+            project.development_plan = step['development_plan']
+            return
 
-    if is_development_planning_step_already_finished(self.project):
-        handle_finished_development_planning_step(self.project, step)
-        return
+        if is_development_planning_step_already_finished(self.project):
+            handle_finished_development_planning_step(self.project, step)
+            return
 
         # DEVELOPMENT PLANNING
         print(color_green_bold("Starting to create the action plan for development...\n"))
