@@ -502,21 +502,18 @@ class Developer(Agent):
         self.project.current_step = ENVIRONMENT_SETUP_STEP
         self.convo_os_specific_tech = AgentConvo(self)
 
-        def has_already_completed_architecture_step():
-            step = get_progress_steps(self.project.args['app_id'], ARCHITECTURE_STEP)
-            return step and not should_execute_step(self.project.args['step'], ARCHITECTURE_STEP)
+        def is_environment_setup_step_already_finished(project):
+            step = get_progress_steps(project.args['app_id'], ENVIRONMENT_SETUP_STEP)
+            return step and not should_execute_step(project.args['step'], ENVIRONMENT_SETUP_STEP)
 
-        def handle_already_completed_architecture_step(step):
-            step_already_finished(self.project.args, step)
-            self.project.architecture = step['architecture']
-
-        # Check if the step has already been completed
-        if has_already_completed_architecture_step():
-            # Handle the case where the step is already completed
-            step = get_progress_steps(self.project.args['app_id'], ARCHITECTURE_STEP)
-            handle_already_completed_architecture_step(step)
+        def handle_finished_environment_setup_step(project, step):
+            step_already_finished(project.args, step)
             return
 
+        if is_environment_setup_step_already_finished(self.project):
+            handle_finished_environment_setup_step(self.project, step)
+            return
+        
         user_input = ''
         while user_input.lower() != 'done':
             print('done', type='button')
