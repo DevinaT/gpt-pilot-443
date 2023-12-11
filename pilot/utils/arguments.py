@@ -102,6 +102,6 @@ def username_to_uuid(username):
     :param username:
     :return:
     """
-    sha1 = hashlib.sha1(username.encode()).hexdigest()
-    uuid_str = "{}-{}-{}-{}-{}".format(sha1[:8], sha1[8:12], sha1[12:16], sha1[16:20], sha1[20:32])
+    sha256 = hashlib.sha256(username.encode()).hexdigest()
+    uuid_str = "{}-{}-{}-{}-{}".format(sha256[:8], sha256[8:12], sha256[12:16], sha256[16:20], sha256[20:32])
     return str(uuid.UUID(uuid_str))
